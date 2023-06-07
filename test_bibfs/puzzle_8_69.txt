@@ -1,0 +1,60 @@
+Total nodes checked: 47
+Total nodes expanded: 83
+Total solution steps: 7
+The solution path is:
+Current Status:
+  1   2   3 
+  0   7   5 
+  8   4   6 
+
+==============================
+
+Current Status:
+  1   2   3 
+  7   0   5 
+  8   4   6 
+
+==============================
+
+Current Status:
+  1   2   3 
+  7   4   5 
+  8   0   6 
+
+==============================
+
+Current Status:
+  1   2   3 
+  7   4   5 
+  0   8   6 
+
+==============================
+
+Current Status:
+  1   2   3 
+  0   4   5 
+  7   8   6 
+
+==============================
+
+Current Status:
+  1   2   3 
+  4   0   5 
+  7   8   6 
+
+==============================
+
+Current Status:
+  1   2   3 
+  4   5   0 
+  7   8   6 
+
+==============================
+
+Current Status:
+  1   2   3 
+  4   5   6 
+  7   8   0 
+
+==============================
+

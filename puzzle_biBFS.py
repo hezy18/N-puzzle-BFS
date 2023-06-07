@@ -50,7 +50,9 @@ class PuzzleNode:
 
     def solve(self):
         visited_forward: Set[str] = set()
-        visited_backward: Set[str] = set()
+        parents_forward: dict[str:str] = {}
+        visited_backward: Set[PuzzleNode] = set()
+        parents_backward: dict[str:str]={}
         queue_forward: List[PuzzleNode] = [self]
         n = self.n
         queue_backward: List[PuzzleNode] = [PuzzleNode(n, status=self.end_status)]
@@ -89,6 +91,8 @@ class PuzzleNode:
             if len(queue_forward) <= len(queue_backward):
                 root = queue_forward.pop(0)
                 visited_forward.add(PuzzleNode.get_fingerprint(root.status))
+                if root.parent!=None:
+                    parents_forward[PuzzleNode.get_fingerprint(root.status)] = PuzzleNode.get_fingerprint(root.parent.status)
                 is_forward = True
                 if PuzzleNode.get_fingerprint(root.status) in visited_backward:
                     # find the answer
@@ -97,6 +101,8 @@ class PuzzleNode:
             else:
                 root = queue_backward.pop(0)
                 visited_backward.add(PuzzleNode.get_fingerprint(root.status))
+                if root.parent!=None:
+                    parents_backward[PuzzleNode.get_fingerprint(root.status)] = PuzzleNode.get_fingerprint(root.parent.status)
                 is_forward = False
                 if PuzzleNode.get_fingerprint(root.status) in visited_forward:
                     # find the answer
@@ -126,23 +132,44 @@ class PuzzleNode:
             solution_path_forward = []
             solution_path_backward = []
             cur_node = answer
-            while cur_node is not None:
-                if PuzzleNode.get_fingerprint(cur_node.status) in visited_forward:
-                    solution_path_forward.append(cur_node)
+            cur_fingerprint = PuzzleNode.get_fingerprint(cur_node.status)
+            # while cur_node is not None:
+            #     if cur_fingerprint in visited_forward:
+            #         solution_path_forward.append(cur_node)
+            #     if PuzzleNode.get_fingerprint(cur_node.status) in visited_backward:
+            #         solution_path_backward.append(cur_node)
+            #     cur_node = cur_node.parent
+            while cur_fingerprint in visited_forward:
+                solution_path_forward.append(cur_fingerprint)
+                if cur_fingerprint in parents_forward:
+                    cur_fingerprint = parents_forward[cur_fingerprint]
                 else:
-                    solution_path_backward.append(cur_node)
-                cur_node = cur_node.parent
+                    break
+            cur_fingerprint = PuzzleNode.get_fingerprint(cur_node.status)
+            while cur_fingerprint in visited_backward:
+                solution_path_backward.append(cur_fingerprint)
+                if cur_fingerprint in parents_backward:
+                    cur_fingerprint = parents_backward[cur_fingerprint]
+                else:
+                    break
 
             solution_path_forward.reverse()
-            # solution_path_backward.pop(0)
-            solution_path_backward.reverse()
+            solution_path_backward.pop(0)
+            # solution_path_backward.reverse()
             solution_path = solution_path_forward + solution_path_backward
 
             print("Total solution steps:", len(solution_path) - 1)
             print('The solution path is:')
             res_path = []
             for node in solution_path:
-                node.print_status()
-                res_path.append(np.array(node.status).reshape((self.n, self.n)))
+                node_list = node.split(',')
+                node_list = [int(num) for num in node_list]
+                print('Current Status:')
+                for i in range(self.n):
+                    for j in range(self.n):
+                        pos = self.n * i + j
+                        print(f'{node_list[pos]: 3d}', end=' ')
+                    print()
+                res_path.append(np.array(node_list).reshape((self.n, self.n)))
                 print('\n' + '=' * 30 + '\n')
         return num_nodes_check, num_nodes_expand, res_path
